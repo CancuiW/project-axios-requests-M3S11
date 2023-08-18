@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const EditMovieForm = (props) => {
   const navigate = useNavigate();
-
+  const { id } = useParams()
   const { setMovies } = props;
   const [movie, setMovie] = useState({
     title: "",
@@ -15,6 +15,19 @@ const EditMovieForm = (props) => {
     metascore: 0,
     description: ""
   });
+
+  useEffect(()=>{
+    //aims to get special object to be displayed as a default input value
+    axios.get(`http://localhost:9000/api/movies/${id}`)
+         .then(res=>{
+          //console.log(res.data)
+           setMovie(res.data)
+         })
+         .catch(err=>{
+          console.log(err)
+         })
+
+  },[])
 
   const handleChange = (e) => {
     setMovie({
@@ -25,10 +38,11 @@ const EditMovieForm = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     axios.put(`http://localhost:9000/api/movies/${id}`, movie)
       .then(res => {
         setMovies(res.data);
-        navigate(`/movies/${movie.id}`);
+        navigate(`/movies/${id}`);
       })
       .catch(err => {
         console.log(err);
@@ -69,7 +83,7 @@ const EditMovieForm = (props) => {
           </div>
           <div className="modal-footer">
             <input type="submit" className="btn btn-info" value="Save" />
-            <Link to={`/movies/1`}><input type="button" className="btn btn-default" value="Cancel" /></Link>
+            <Link to={'/movies'}><input type="button" className="btn btn-default" value="Cancel" /></Link>
           </div>
         </form>
       </div>
